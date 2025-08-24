@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Number Formatter | Professional Portfolio</title>
+    <meta name="description" content="Professional number formatting tool with real-time conversion, dark/light mode, and advanced features">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="light-mode">
+    <div class="container">
+        <header class="header">
+            <div class="header-content">
+                <h1 class="title">
+                    <i class="fas fa-calculator"></i>
+                    Advanced Number Formatter
+                </h1>
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark/light mode">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
+            <p class="subtitle">Professional number formatting with real-time conversion, infinite scale support, and advanced features</p>
+        </header>
+
+        <main class="main-content">
+            <div class="input-section">
+                <label for="numberInput" class="input-label">Enter a number:</label>
+                <div class="input-container">
+                    <input 
+                        type="text" 
+                        id="numberInput" 
+                        class="number-input" 
+                        placeholder="Type any number (e.g., 1234567)"
+                        autocomplete="off"
+                        spellcheck="false"
+                    >
+                    <button class="clear-btn" id="clearBtn" aria-label="Clear input">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="results-section">
+                <div class="result-card">
+                    <div class="result-header">
+                        <h3 class="result-title">
+                            <i class="fas fa-hashtag"></i>
+                            Raw Number
+                        </h3>
+                        <button class="copy-btn" id="copyRawBtn" aria-label="Copy raw number">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="result-value" id="rawValue">0</div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-header">
+                        <h3 class="result-title">
+                            <i class="fas fa-compress-alt"></i>
+                            Formatted
+                        </h3>
+                        <button class="copy-btn" id="copyFormattedBtn" aria-label="Copy formatted number">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="result-value" id="formattedValue">0</div>
+                </div>
+            </div>
+
+
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2024 Advanced Number Formatter. Built with modern web technologies.</p>
+        </footer>
+    </div>
+
+    <div class="toast" id="toast">
+        <div class="toast-content">
+            <i class="fas fa-check-circle"></i>
+            <span class="toast-message">Copied to clipboard!</span>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
