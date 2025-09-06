@@ -28,7 +28,10 @@
 
         <main class="main-content">
             <div class="input-section">
-                <label for="numberInput" class="input-label">Enter a number:</label>
+                <label for="numberInput" class="input-label">
+                    <i class="fas fa-keyboard"></i>
+                    Enter a number:
+                </label>
                 <div class="input-container">
                     <input 
                         type="text" 
@@ -41,6 +44,13 @@
                     <button class="clear-btn" id="clearBtn" aria-label="Clear input">
                         <i class="fas fa-times"></i>
                     </button>
+                </div>
+                <div class="counter-display">
+                    <span class="counter-label">
+                        <i class="fas fa-hashtag"></i>
+                        Numbers typed:
+                    </span>
+                    <span class="counter-value" id="counterValue">0</span>
                 </div>
             </div>
 
@@ -69,6 +79,110 @@
                         </button>
                     </div>
                     <div class="result-value" id="formattedValue">0</div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-header">
+                        <h3 class="result-title">
+                            <i class="fas fa-font"></i>
+                            Word Form
+                        </h3>
+                        <button class="copy-btn" id="copyWordBtn" aria-label="Copy word form">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="result-value" id="wordValue">Zero</div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-header">
+                        <h3 class="result-title">
+                            <i class="fas fa-monument"></i>
+                            Roman Numerals
+                        </h3>
+                        <button class="copy-btn" id="copyRomanBtn" aria-label="Copy Roman numerals">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="result-value" id="romanValue">N</div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-header">
+                        <h3 class="result-title">
+                            <i class="fas fa-code"></i>
+                            Binary & Hex
+                        </h3>
+                        <button class="copy-btn" id="copyBinaryBtn" aria-label="Copy binary and hex">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="result-value" id="binaryValue">0b0 / 0x0</div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-header">
+                        <h3 class="result-title">
+                            <i class="fas fa-lightbulb"></i>
+                            Number Facts
+                        </h3>
+                        <button class="copy-btn" id="copyFactsBtn" aria-label="Copy number facts">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="result-value" id="factsValue">Even number</div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-header">
+                        <h3 class="result-title">
+                            <i class="fas fa-dollar-sign"></i>
+                            Currency Format
+                        </h3>
+                        <button class="copy-btn" id="copyCurrencyBtn" aria-label="Copy currency format">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="result-value" id="currencyValue">$0.00</div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-header">
+                        <h3 class="result-title">
+                            <i class="fas fa-flask"></i>
+                            Scientific Notation
+                        </h3>
+                        <button class="copy-btn" id="copyScientificBtn" aria-label="Copy scientific notation">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="result-value" id="scientificValue">0.00e+0</div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-header">
+                        <h3 class="result-title">
+                            <i class="fas fa-percentage"></i>
+                            Percentage & Ratio
+                        </h3>
+                        <button class="copy-btn" id="copyPercentageBtn" aria-label="Copy percentage and ratio">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="result-value" id="percentageValue">0% (0:1)</div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-header">
+                        <h3 class="result-title">
+                            <i class="fas fa-clock"></i>
+                            Time Duration
+                        </h3>
+                        <button class="copy-btn" id="copyTimeBtn" aria-label="Copy time duration">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                    <div class="result-value" id="timeValue">0 seconds</div>
                 </div>
             </div>
 

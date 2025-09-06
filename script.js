@@ -12,12 +12,30 @@ class NumberFormatter {
         this.numberInput = document.getElementById('numberInput');
         this.rawValue = document.getElementById('rawValue');
         this.formattedValue = document.getElementById('formattedValue');
+        this.wordValue = document.getElementById('wordValue');
+        this.romanValue = document.getElementById('romanValue');
+        this.binaryValue = document.getElementById('binaryValue');
+        this.factsValue = document.getElementById('factsValue');
+        this.currencyValue = document.getElementById('currencyValue');
+        this.scientificValue = document.getElementById('scientificValue');
+        this.percentageValue = document.getElementById('percentageValue');
+        this.timeValue = document.getElementById('timeValue');
         this.clearBtn = document.getElementById('clearBtn');
         this.themeToggle = document.getElementById('themeToggle');
         this.copyRawBtn = document.getElementById('copyRawBtn');
         this.copyFormattedBtn = document.getElementById('copyFormattedBtn');
+        this.copyWordBtn = document.getElementById('copyWordBtn');
+        this.copyRomanBtn = document.getElementById('copyRomanBtn');
+        this.copyBinaryBtn = document.getElementById('copyBinaryBtn');
+        this.copyFactsBtn = document.getElementById('copyFactsBtn');
+        this.copyCurrencyBtn = document.getElementById('copyCurrencyBtn');
+        this.copyScientificBtn = document.getElementById('copyScientificBtn');
+        this.copyPercentageBtn = document.getElementById('copyPercentageBtn');
+        this.copyTimeBtn = document.getElementById('copyTimeBtn');
         this.toast = document.getElementById('toast');
+        this.counterValue = document.getElementById('counterValue');
         this.body = document.body;
+        this.currentCount = 0;
     }
 
     // Bind event listeners
@@ -25,6 +43,9 @@ class NumberFormatter {
         // Input events
         this.numberInput.addEventListener('input', (e) => this.handleInput(e));
         this.numberInput.addEventListener('keydown', (e) => this.handleKeydown(e));
+        this.numberInput.addEventListener('keypress', (e) => this.handleKeypress(e));
+        this.numberInput.addEventListener('beforeinput', (e) => this.handleBeforeInput(e));
+        this.numberInput.addEventListener('paste', (e) => this.handlePaste(e));
         this.numberInput.addEventListener('focus', () => this.handleFocus());
         this.numberInput.addEventListener('blur', () => this.handleBlur());
 
@@ -33,6 +54,14 @@ class NumberFormatter {
         this.themeToggle.addEventListener('click', () => this.toggleTheme());
         this.copyRawBtn.addEventListener('click', () => this.copyToClipboard('raw'));
         this.copyFormattedBtn.addEventListener('click', () => this.copyToClipboard('formatted'));
+        this.copyWordBtn.addEventListener('click', () => this.copyToClipboard('word'));
+        this.copyRomanBtn.addEventListener('click', () => this.copyToClipboard('roman'));
+        this.copyBinaryBtn.addEventListener('click', () => this.copyToClipboard('binary'));
+        this.copyFactsBtn.addEventListener('click', () => this.copyToClipboard('facts'));
+        this.copyCurrencyBtn.addEventListener('click', () => this.copyToClipboard('currency'));
+        this.copyScientificBtn.addEventListener('click', () => this.copyToClipboard('scientific'));
+        this.copyPercentageBtn.addEventListener('click', () => this.copyToClipboard('percentage'));
+        this.copyTimeBtn.addEventListener('click', () => this.copyToClipboard('time'));
 
 
 
@@ -42,7 +71,7 @@ class NumberFormatter {
 
     // Initialize the application
     initializeApp() {
-        this.updateDisplay('0', '0');
+        this.updateAllDisplays(0);
         this.updateClearButton();
         this.animateElements();
     }
@@ -52,8 +81,21 @@ class NumberFormatter {
         const value = e.target.value;
         const cleanValue = this.cleanInput(value);
         
+        // If the cleaned value is different from the original, update the input
+        if (value !== cleanValue) {
+            const cursorPosition = e.target.selectionStart;
+            e.target.value = cleanValue;
+            // Adjust cursor position to account for removed characters
+            const removedChars = value.length - cleanValue.length;
+            e.target.setSelectionRange(cursorPosition - removedChars, cursorPosition - removedChars);
+            this.showInputRestrictionFeedback();
+        }
+        
+        // Update counter with animated increment
+        this.updateCounter(cleanValue.length);
+        
         if (cleanValue === '') {
-            this.updateDisplay('0', '0');
+            this.updateAllDisplays(0);
             this.updateClearButton();
             return;
         }
@@ -61,15 +103,13 @@ class NumberFormatter {
         try {
             const number = this.parseNumber(cleanValue);
             if (number !== null) {
-                const formatted = this.formatNumber(number);
-                const rawFormatted = this.formatRawNumber(number);
-                this.updateDisplay(rawFormatted, formatted);
+                this.updateAllDisplays(number);
             } else {
-                this.updateDisplay('Invalid', 'Invalid');
+                this.updateAllDisplays('Invalid');
             }
         } catch (error) {
             console.error('Number formatting error:', error);
-            this.updateDisplay('Error', 'Error');
+            this.updateAllDisplays('Error');
         }
 
         this.updateClearButton();
@@ -280,18 +320,38 @@ class NumberFormatter {
         return parts.join('.');
     }
 
-    // Update display values
-    updateDisplay(raw, formatted) {
-        this.rawValue.textContent = raw;
-        this.formattedValue.textContent = formatted;
+    // Update all display values
+    updateAllDisplays(number) {
+        if (number === 'Invalid' || number === 'Error') {
+            this.rawValue.textContent = number;
+            this.formattedValue.textContent = number;
+            this.wordValue.textContent = number;
+            this.romanValue.textContent = number;
+            this.binaryValue.textContent = number;
+            this.factsValue.textContent = number;
+            this.currencyValue.textContent = number;
+            this.scientificValue.textContent = number;
+            this.percentageValue.textContent = number;
+            this.timeValue.textContent = number;
+        } else {
+            this.rawValue.textContent = this.formatRawNumber(number);
+            this.formattedValue.textContent = this.formatNumber(number);
+            this.wordValue.textContent = this.numberToWords(number);
+            this.romanValue.textContent = this.numberToRoman(number);
+            this.binaryValue.textContent = this.numberToBinaryHex(number);
+            this.factsValue.textContent = this.getNumberFacts(number);
+            this.currencyValue.textContent = this.numberToCurrency(number);
+            this.scientificValue.textContent = this.numberToScientific(number);
+            this.percentageValue.textContent = this.numberToPercentage(number);
+            this.timeValue.textContent = this.numberToTimeDuration(number);
+        }
         
-        // Add animation class
-        this.rawValue.classList.add('updated');
-        this.formattedValue.classList.add('updated');
+        // Add animation class to all elements
+        const elements = [this.rawValue, this.formattedValue, this.wordValue, this.romanValue, this.binaryValue, this.factsValue, this.currencyValue, this.scientificValue, this.percentageValue, this.timeValue];
+        elements.forEach(el => el.classList.add('updated'));
         
         setTimeout(() => {
-            this.rawValue.classList.remove('updated');
-            this.formattedValue.classList.remove('updated');
+            elements.forEach(el => el.classList.remove('updated'));
         }, 300);
     }
 
@@ -305,7 +365,8 @@ class NumberFormatter {
     clearInput() {
         this.numberInput.value = '';
         this.numberInput.focus();
-        this.updateDisplay('0', '0');
+        this.updateAllDisplays(0);
+        this.updateCounter(0);
         this.updateClearButton();
     }
 
@@ -318,6 +379,111 @@ class NumberFormatter {
         } else if (e.key === 'Enter') {
             this.numberInput.blur();
         }
+    }
+
+    // Handle beforeinput to prevent non-numeric input (most reliable)
+    handleBeforeInput(e) {
+        // Allow: backspace, delete, tab, escape, enter, home, end, left, right, up, down
+        if (e.inputType === 'deleteContentBackward' || 
+            e.inputType === 'deleteContentForward' ||
+            e.inputType === 'insertCompositionText' ||
+            e.inputType === 'deleteCompositionText') {
+            return;
+        }
+        
+        // Allow only numbers, decimal point, and minus sign
+        if (e.data && !/[0-9.-]/.test(e.data)) {
+            e.preventDefault();
+            this.showInputRestrictionFeedback();
+        }
+    }
+
+    // Handle keypress to prevent non-numeric input
+    handleKeypress(e) {
+        // Allow: backspace, delete, tab, escape, enter, home, end, left, right, up, down
+        if ([8, 9, 27, 13, 46, 35, 36, 37, 38, 39, 40].indexOf(e.keyCode) !== -1 ||
+            // Allow: Ctrl+A, Ctrl+C, Ctrl+V, Ctrl+X, Ctrl+Z
+            (e.keyCode === 65 && e.ctrlKey === true) ||
+            (e.keyCode === 67 && e.ctrlKey === true) ||
+            (e.keyCode === 86 && e.ctrlKey === true) ||
+            (e.keyCode === 88 && e.ctrlKey === true) ||
+            (e.keyCode === 90 && e.ctrlKey === true)) {
+            return;
+        }
+        
+        // Allow only numbers, decimal point, and minus sign
+        const char = e.key;
+        if (!/[0-9.-]/.test(char)) {
+            e.preventDefault();
+            this.showInputRestrictionFeedback();
+        }
+    }
+
+    // Handle paste events to filter non-numeric content
+    handlePaste(e) {
+        e.preventDefault();
+        const paste = (e.clipboardData || window.clipboardData).getData('text');
+        const cleanPaste = paste.replace(/[^\d.,-]/g, '');
+        
+        if (cleanPaste !== paste) {
+            this.showInputRestrictionFeedback();
+        }
+        
+        // Insert only the clean numeric content
+        const start = this.numberInput.selectionStart;
+        const end = this.numberInput.selectionEnd;
+        const currentValue = this.numberInput.value;
+        const newValue = currentValue.substring(0, start) + cleanPaste + currentValue.substring(end);
+        
+        this.numberInput.value = newValue;
+        this.numberInput.setSelectionRange(start + cleanPaste.length, start + cleanPaste.length);
+        
+        // Trigger input event to update display and counter
+        this.numberInput.dispatchEvent(new Event('input'));
+    }
+
+    // Show visual feedback when input is restricted
+    showInputRestrictionFeedback() {
+        this.numberInput.style.borderColor = '#ef4444';
+        this.numberInput.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.1)';
+        
+        setTimeout(() => {
+            this.numberInput.style.borderColor = '';
+            this.numberInput.style.boxShadow = '';
+        }, 300);
+    }
+
+    // Update counter with smooth animation
+    updateCounter(newCount) {
+        if (newCount === this.currentCount) return;
+        
+        const targetCount = newCount;
+        const startCount = this.currentCount;
+        const duration = 300; // Animation duration in ms
+        const startTime = performance.now();
+        
+        const animate = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            // Easing function for smooth animation
+            const easeOutCubic = 1 - Math.pow(1 - progress, 3);
+            const currentCount = Math.round(startCount + (targetCount - startCount) * easeOutCubic);
+            
+            this.counterValue.textContent = currentCount;
+            
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                this.currentCount = targetCount;
+                this.counterValue.classList.add('updated');
+                setTimeout(() => {
+                    this.counterValue.classList.remove('updated');
+                }, 400);
+            }
+        };
+        
+        requestAnimationFrame(animate);
     }
 
     // Handle global keyboard shortcuts
@@ -348,14 +514,59 @@ class NumberFormatter {
 
     // Copy to clipboard
     async copyToClipboard(type) {
-        const text = type === 'raw' ? this.rawValue.textContent : this.formattedValue.textContent;
+        let text, btn;
+        
+        switch(type) {
+            case 'raw':
+                text = this.rawValue.textContent;
+                btn = this.copyRawBtn;
+                break;
+            case 'formatted':
+                text = this.formattedValue.textContent;
+                btn = this.copyFormattedBtn;
+                break;
+            case 'word':
+                text = this.wordValue.textContent;
+                btn = this.copyWordBtn;
+                break;
+            case 'roman':
+                text = this.romanValue.textContent;
+                btn = this.copyRomanBtn;
+                break;
+            case 'binary':
+                text = this.binaryValue.textContent;
+                btn = this.copyBinaryBtn;
+                break;
+            case 'facts':
+                text = this.factsValue.textContent;
+                btn = this.copyFactsBtn;
+                break;
+            case 'currency':
+                text = this.currencyValue.textContent;
+                btn = this.copyCurrencyBtn;
+                break;
+            case 'scientific':
+                text = this.scientificValue.textContent;
+                btn = this.copyScientificBtn;
+                break;
+            case 'percentage':
+                text = this.percentageValue.textContent;
+                btn = this.copyPercentageBtn;
+                break;
+            case 'time':
+                text = this.timeValue.textContent;
+                btn = this.copyTimeBtn;
+                break;
+            default:
+                text = this.rawValue.textContent;
+                btn = this.copyRawBtn;
+        }
         
         try {
             await navigator.clipboard.writeText(text);
             this.showToast(`Copied ${type} value to clipboard!`);
             
             // Add visual feedback
-            const btn = type === 'raw' ? this.copyRawBtn : this.copyFormattedBtn;
             btn.classList.add('copied');
             setTimeout(() => btn.classList.remove('copied'), 1000);
             
@@ -436,6 +647,207 @@ class NumberFormatter {
         const formatted = formatter.formatNumber(number);
         const raw = formatter.formatRawNumber(number);
         return { formatted, raw };
+    }
+
+    // Convert number to words
+    numberToWords(num) {
+        if (num === 0) return 'Zero';
+        if (num < 0) return 'Negative ' + this.numberToWords(-num);
+        
+        const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+        const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+        const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+        const scales = ['', 'Thousand', 'Million', 'Billion', 'Trillion', 'Quadrillion', 'Quintillion'];
+        
+        if (num < 10) return ones[num];
+        if (num < 20) return teens[num - 10];
+        if (num < 100) return tens[Math.floor(num / 10)] + (num % 10 ? '-' + ones[num % 10] : '');
+        if (num < 1000) return ones[Math.floor(num / 100)] + ' Hundred' + (num % 100 ? ' ' + this.numberToWords(num % 100) : '');
+        
+        for (let i = scales.length - 1; i >= 0; i--) {
+            const scale = Math.pow(1000, i);
+            if (num >= scale) {
+                const quotient = Math.floor(num / scale);
+                const remainder = num % scale;
+                return this.numberToWords(quotient) + ' ' + scales[i] + (remainder ? ' ' + this.numberToWords(remainder) : '');
+            }
+        }
+        
+        return 'Number too large';
+    }
+
+    // Convert number to Roman numerals
+    numberToRoman(num) {
+        if (num === 0) return 'N';
+        if (num < 0) return 'Negative numbers not supported';
+        if (num > 3999) return 'Number too large for Roman numerals';
+        
+        const values = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1];
+        const symbols = ['M', 'CM', 'D', 'CD', 'C', 'XC', 'L', 'XL', 'X', 'IX', 'V', 'IV', 'I'];
+        
+        let result = '';
+        for (let i = 0; i < values.length; i++) {
+            while (num >= values[i]) {
+                result += symbols[i];
+                num -= values[i];
+            }
+        }
+        return result;
+    }
+
+    // Convert number to binary and hexadecimal
+    numberToBinaryHex(num) {
+        if (num === 0) return '0b0 / 0x0';
+        if (!Number.isInteger(num)) return 'Decimal numbers not supported';
+        if (num < 0) return 'Negative numbers not supported';
+        if (num > 9007199254740991) return 'Number too large';
+        
+        const binary = '0b' + num.toString(2);
+        const hex = '0x' + num.toString(16).toUpperCase();
+        return `${binary} / ${hex}`;
+    }
+
+    // Get interesting number facts
+    getNumberFacts(num) {
+        if (num === 0) return 'Zero (additive identity)';
+        if (!Number.isInteger(num)) return 'Decimal number';
+        if (num < 0) return 'Negative number';
+        
+        const facts = [];
+        
+        // Even/Odd
+        facts.push(num % 2 === 0 ? 'Even' : 'Odd');
+        
+        // Prime check
+        if (this.isPrime(num)) {
+            facts.push('Prime');
+        }
+        
+        // Perfect square
+        if (Number.isInteger(Math.sqrt(num))) {
+            facts.push('Perfect square');
+        }
+        
+        // Perfect cube
+        if (Number.isInteger(Math.cbrt(num))) {
+            facts.push('Perfect cube');
+        }
+        
+        // Fibonacci
+        if (this.isFibonacci(num)) {
+            facts.push('Fibonacci');
+        }
+        
+        // Palindrome
+        if (this.isPalindrome(num.toString())) {
+            facts.push('Palindrome');
+        }
+        
+        // Sum of digits
+        const digitSum = num.toString().split('').reduce((sum, digit) => sum + parseInt(digit), 0);
+        if (digitSum > 0) {
+            facts.push(`Sum of digits: ${digitSum}`);
+        }
+        
+        return facts.length > 0 ? facts.join(' • ') : 'Regular number';
+    }
+
+    // Helper function to check if number is prime
+    isPrime(num) {
+        if (num < 2) return false;
+        if (num === 2) return true;
+        if (num % 2 === 0) return false;
+        
+        for (let i = 3; i <= Math.sqrt(num); i += 2) {
+            if (num % i === 0) return false;
+        }
+        return true;
+    }
+
+    // Helper function to check if number is Fibonacci
+    isFibonacci(num) {
+        if (num < 0) return false;
+        if (num === 0 || num === 1) return true;
+        
+        let a = 0, b = 1;
+        while (b < num) {
+            const temp = a + b;
+            a = b;
+            b = temp;
+        }
+        return b === num;
+    }
+
+    // Helper function to check if string is palindrome
+    isPalindrome(str) {
+        return str === str.split('').reverse().join('');
+    }
+
+    // Convert number to currency format
+    numberToCurrency(num) {
+        if (num === 0) return '$0.00';
+        if (num < 0) return '-$' + Math.abs(num).toFixed(2);
+        
+        // Format with commas and 2 decimal places
+        return '$' + num.toLocaleString('en-US', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    }
+
+    // Convert number to scientific notation
+    numberToScientific(num) {
+        if (num === 0) return '0.00e+0';
+        if (Math.abs(num) < 0.001 || Math.abs(num) >= 1000000) {
+            return num.toExponential(2);
+        }
+        return num.toFixed(2) + 'e+0';
+    }
+
+    // Convert number to percentage and ratio
+    numberToPercentage(num) {
+        if (num === 0) return '0% (0:1)';
+        if (num < 0) return 'Negative percentage not supported';
+        
+        const percentage = (num * 100).toFixed(1) + '%';
+        
+        // Calculate ratio (simplified)
+        let ratio;
+        if (num === 1) {
+            ratio = '1:1';
+        } else if (num < 1) {
+            const denominator = Math.round(1 / num);
+            ratio = `1:${denominator}`;
+        } else {
+            const numerator = Math.round(num);
+            ratio = `${numerator}:1`;
+        }
+        
+        return `${percentage} (${ratio})`;
+    }
+
+    // Convert number to time duration
+    numberToTimeDuration(num) {
+        if (num === 0) return '0 seconds';
+        if (!Number.isInteger(num) || num < 0) return 'Invalid time duration';
+        
+        const seconds = num;
+        const minutes = Math.floor(seconds / 60);
+        const hours = Math.floor(minutes / 60);
+        const days = Math.floor(hours / 24);
+        
+        const remainingHours = hours % 24;
+        const remainingMinutes = minutes % 60;
+        const remainingSeconds = seconds % 60;
+        
+        const parts = [];
+        
+        if (days > 0) parts.push(`${days} day${days !== 1 ? 's' : ''}`);
+        if (remainingHours > 0) parts.push(`${remainingHours} hour${remainingHours !== 1 ? 's' : ''}`);
+        if (remainingMinutes > 0) parts.push(`${remainingMinutes} minute${remainingMinutes !== 1 ? 's' : ''}`);
+        if (remainingSeconds > 0) parts.push(`${remainingSeconds} second${remainingSeconds !== 1 ? 's' : ''}`);
+        
+        return parts.length > 0 ? parts.join(', ') : '0 seconds';
     }
 }
 
